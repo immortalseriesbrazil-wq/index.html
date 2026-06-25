@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sorteador Esports</title>
+
+<style>
+
+body{
+background:#0f0f0f;
+color:white;
+font-family:Arial;
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+h1{
+text-align:center;
+color:#00ff88;
+}
+
+textarea{
+width:100%;
+height:220px;
+padding:10px;
+font-size:16px;
+}
+
+button{
+padding:12px 20px;
+margin:5px;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+}
+
+.sortear{
+background:#00ff88;
+font-weight:bold;
+}
+
+#resultado{
+font-size:50px;
+font-weight:bold;
+text-align:center;
+margin-top:30px;
+color:#00ff88;
+min-height:70px;
+}
+
+.card{
+background:#1c1c1c;
+padding:15px;
+border-radius:10px;
+margin-top:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Sorteador Esports</h1>
+
+<div class="card">
+
+<p>Cole um nome por linha:</p>
+
+<textarea id="nomes"></textarea>
+
+<br>
+
+<button onclick="carregarLista()">
+Carregar Lista
+</button>
+
+<button class="sortear" onclick="sortear()">
+Sortear
+</button>
+
+<button onclick="desfazer()">
+Desfazer
+</button>
+
+<button onclick="reiniciar()">
+Reiniciar
+</button>
+
+</div>
+
+<div class="card">
+<h3>Participantes restantes:</h3>
+<span id="contador">0</span>
+</div>
+
+<div id="resultado"></div>
+
+<div class="card">
+<h3>Histórico de Sorteados</h3>
+<ul id="historico"></ul>
+</div>
+
+<script>
+
+let participantes = [];
+let sorteados = [];
+let ultimo = null;
+
+function atualizarContador(){
+document.getElementById("contador").innerText =
+participantes.length;
+}
+
+function carregarLista(){
+
+const texto =
+document.getElementById("nomes").value;
+
+participantes =
+texto.split("\n")
+.map(x=>x.trim())
+.filter(x=>x!="");
+
+sorteados = [];
+
+document.getElementById("historico").innerHTML="";
+
+atualizarContador();
+
+alert(
+participantes.length +
+" participantes carregados."
+);
+}
+
+function sortear(){
+
+if(participantes.length===0){
+alert("Todos já foram sorteados!");
+return;
+}
+
+let contador = 0;
+
+const animacao =
+setInterval(()=>{
+
+const aleatorio =
+participantes[
+Math.floor(
+Math.random()*
+participantes.length
+)
+];
+
+document.getElementById("resultado")
+.innerText = aleatorio;
+
+contador++;
+
+if(contador>20){
+
+clearInterval(animacao);
+
+const indice =
+Math.floor(
+Math.random()*
+participantes.length
+);
+
+const vencedor =
+participantes.splice(indice,1)[0];
+
+ultimo = vencedor;
+
+sorteados.push(vencedor);
+
+document.getElementById("resultado")
+.innerText =
+"🏆 " + vencedor;
+
+const li =
+document.createElement("li");
+
+li.innerText = vencedor;
+
+document.getElementById("historico")
+.appendChild(li);
+
+atualizarContador();
+
+}
+
+},100);
+
+}
+
+function desfazer(){
+
+if(!ultimo) return;
+
+participantes.push(ultimo);
+
+sorteados.pop();
+
+const lista =
+document.getElementById("historico");
+
+lista.removeChild(
+lista.lastChild
+);
+
+ultimo = null;
+
+atualizarContador();
+
+}
+
+function reiniciar(){
+
+participantes = [];
+sorteados = [];
+
+document.getElementById("resultado")
+.innerText = "";
+
+document.getElementById("historico")
+.innerHTML = "";
+
+document.getElementById("nomes")
+.value = "";
+
+atualizarContador();
+
+}
+
+</script>
+
+</body>
+</html>
